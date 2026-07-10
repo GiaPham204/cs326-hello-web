@@ -8,6 +8,10 @@ const PORT = process.env.PORT || 3000;
 app.set("view engine", "ejs");
 app.set("views", "views");
 
+app.get("/about", (req, res) => {
+  res.render("about", { title: "About" });
+});
+
 app.use("/", pagesRouter);
 app.use("/api", apiRouter);
 
