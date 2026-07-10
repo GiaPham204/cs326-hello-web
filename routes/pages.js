@@ -22,4 +22,17 @@ router.get("/count", (req, res) => {
   res.send(`Counting from ${from} to ${to}.`);
 });
 
+router.get("/entries", (req, res) => {
+  const entries = [
+    { title: "First Entry" },
+    { title: "Second Entry" },
+    { title: "Third Entry" },
+  ];
+
+  res.render("entries", {
+    title: "My Entries",
+    entries,
+  });
+});
+
 export default router;
