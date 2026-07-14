@@ -8,7 +8,10 @@
 
   <ul>
     <% entries.forEach(entry => { %>
-    <li><%= entry.title %></li>
+    <li>
+      <strong><%= entry.title %></strong>
+      <p><%= entry.body %></p>
+    </li>
     <% }) %>
   </ul>
 

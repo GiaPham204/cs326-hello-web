@@ -1,5 +1,21 @@
 import { Router } from "express";
 const router = Router();
+
+const entries = [
+  {
+    title: "First note",
+    body: "Notes from the first session.",
+  },
+  {
+    title: "Second note",
+    body: "Notes from the second session.",
+  },
+  {
+    title: "Third note",
+    body: "Notes from the third session.",
+  },
+];
+
 router.get("/", (req, res) => {
   res.send("Hello, Web!");
 });
@@ -23,16 +39,40 @@ router.get("/count", (req, res) => {
 });
 
 router.get("/entries", (req, res) => {
-  const entries = [
-    { title: "First Entry" },
-    { title: "Second Entry" },
-    { title: "Third Entry" },
-  ];
-
   res.render("entries", {
     title: "My Entries",
     entries,
   });
+});
+
+router.post("/entries", (req, res) => {
+  const { title, body } = req.body;
+  if (!title || !body) {
+    res.status(400).json({
+      error: "title and body are required.",
+    });
+    return;
+  }
+
+  const newEntry = {
+    title,
+    body,
+  };
+
+  entries.push(newEntry);
+  res.status(201).json(newEntry);
+});
+
+router.delete("/entries/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  if (id < 0 || id >= entries.length) {
+    res.status(404).json({
+      error: "Entry not found.",
+    });
+    return;
+  }
+  entries.splice(id, 1);
+  res.status(204).send();
 });
 
 router.get("/about", (req, res) => {
