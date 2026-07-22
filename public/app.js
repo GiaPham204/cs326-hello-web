@@ -1,54 +1,121 @@
 const form = document.querySelector("#entry-form");
-const entriesList = document.querySelector("ul");
-
-entriesList.addEventListener("click", async (event) => {
-  if (event.target.matches("button")) {
-    const li = event.target.closest("li");
-    const index = li.dataset.index;
-
-    const response = await fetch(`/entries/${index}`, {
-      method: "Delete",
-    });
-
-    if (response.ok) {
-      li.remove();
-      const remainingEntries = entriesList.querySelectorAll("li");
-      remainingEntries.forEach((entry, index) => {
-        entry.dataset.index = index;
-      });
-    }
-  }
-});
+const list = document.querySelector("#entries");
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const formData = new FormData(form);
-  const data = Object.fromEntries(formData);
+  const data = new FormData(form);
+  const entry = Object.fromEntries(data);
 
   const response = await fetch("/entries", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(entry),
   });
-  const newEntry = await response.json();
-  const li = document.createElement("li");
-  const strong = document.createElement("strong");
-  const p = document.createElement("p");
-  const button = document.createElement("button");
 
-  strong.textContent = newEntry.title;
-  p.textContent = newEntry.body;
-  button.textContent = "DELETE";
+  if (!response.ok) {
+    const { error } = await response.json();
+    alert(error);
+    return;
+  }
 
-  li.appendChild(strong);
-  li.appendChild(p);
-  li.appendChild(button);
-  li.dataset.index = entriesList.children.length;
+  const saved = await response.json();
 
-  entriesList.appendChild(li);
+  const item = document.createElement("li");
+  item.dataset.id = list.children.length;
+  item.dataset.title = saved.title;
+  item.dataset.body = saved.body;
+  item.innerHTML = `<span class="entry-display"><strong>${saved.title}:</strong> ${saved.body}</span><button class="edit-btn" type="button">Edit</button><button class="delete-btn" type="button">Delete</button>`;
+  list.append(item);
 
   form.reset();
+});
+
+const startEdit = (item) => {
+  const display = item.querySelector(".entry-display");
+  const buttons = item.querySelectorAll(".edit-btn, .delete-btn");
+
+  const editForm = document.createElement("form");
+  editForm.className = "edit-form";
+  editForm.innerHTML = `
+    <input type="text" name="title" value="${item.dataset.title}">
+    <input type="text" name="body" value="${item.dataset.body}">
+    <button type="submit">Save</button>
+    <button type="button" class="cancel-btn">Cancel</button>
+  `;
+
+  display.replaceWith(editForm);
+  buttons.forEach((button) => {
+    button.hidden = true;
+  });
+
+  editForm.querySelector(".cancel-btn").addEventListener("click", () => {
+    editForm.replaceWith(display);
+    buttons.forEach((button) => {
+      button.hidden = false;
+    });
+  });
+
+  editForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const data = new FormData(editForm);
+    const entry = Object.fromEntries(data);
+
+    const response = await fetch(`/entries/${item.dataset.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(entry),
+    });
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        item.remove();
+        return;
+      }
+      const { error } = await response.json();
+      alert(error);
+      return;
+    }
+
+    const saved = await response.json();
+    item.dataset.title = saved.title;
+    item.dataset.body = saved.body;
+    display.innerHTML = `<strong>${saved.title}:</strong> ${saved.body}`;
+    editForm.replaceWith(display);
+    buttons.forEach((button) => {
+      button.hidden = false;
+    });
+  });
+};
+
+list.addEventListener("click", async (event) => {
+  if (event.target.matches(".edit-btn")) {
+    startEdit(event.target.closest("li"));
+    return;
+  }
+
+  if (!event.target.matches(".delete-btn")) {
+    return;
+  }
+  const button = event.target;
+  const item = button.closest("li");
+  const id = item.dataset.id;
+
+  button.disabled = true;
+  try {
+    const response = await fetch(`/entries/${id}`, { method: "DELETE" });
+    if (!response.ok) {
+      button.disabled = false;
+      return;
+    }
+
+    item.remove();
+    const remainingItems = list.querySelectorAll("li");
+    remainingItems.forEach((remainingItem, index) => {
+      remainingItem.dataset.id = index;
+    });
+  } catch {
+    button.disabled = false;
+  }
 });

@@ -57,6 +57,34 @@ router.post(
   }),
 );
 
+router.put(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    const id = parseInt(req.params.id);
+    const data = await readFile("entries.json", "utf-8");
+    const entries = JSON.parse(data);
+    const found = findEntryById(entries, id);
+
+    if (!found.some) {
+      res.status(404).json({
+        error: "Entry not found.",
+      });
+      return;
+    }
+    const result = validateEntry(req.body);
+    if (!result.ok) {
+      res.status(400).json({
+        error: result.error,
+      });
+      return;
+    }
+    const updateEntry = result.value;
+    entries[id] = updateEntry;
+    await writeFile("entries.json", JSON.stringify(entries, null, 2));
+    res.status(200).json(updateEntry);
+  }),
+);
+
 router.delete(
   "/:id",
   asyncHandler(async (req, res) => {

@@ -31,15 +31,22 @@
   </button>
   </form>
 
-  <ul>
-    <% entries.forEach((entry, index) => { %>
-    <li data-index="<%= index %>">
-      <strong><%= entry.title %></strong>
-      <p><%= entry.body %></p>
-      <button>Delete</button>
-    </li>
-    <% }) %>
-  </ul>
+  <ul id="entries">
+    <% entries.forEach((entry,index) => { %>
+<li
+data-id="<%= index %>"
+data-title="<%= entry.title %>"
+data-body="<%= entry.body %>"
+>
+<span class="entry-display">
+  <strong><%= entry.title %>:</strong>
+  <%= entry.body %>
+</span>
 
+<button class="edit-btn" type="button">Edit</button>
+<button class="delete-btn" type="button">Delete</button>
+</li>
+<% }) %>
+</ul>
 </body>
 </html>
