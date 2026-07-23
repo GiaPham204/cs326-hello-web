@@ -1,0 +1,4 @@
+export const toEntryDto= (entry) => ({
+  title: entry.title,
+  body: entry.body,
+});
