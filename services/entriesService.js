@@ -3,10 +3,15 @@ import {getAll, save} from "../repositories/entriesRepository.js";
 import {toEntryDto} from "../dtos/entryDto.js";
 
 const validateEntry= ({title, body}) => {
-  if(!title || !body) {
-    return Err("title and body are required.");
-  }
-  return Ok({title, body});
+ const trimmedTitle= title.trim();
+ const trimmedBody= body.trim();
+ if(!trimmedTitle || !trimmedBody) {
+  return Err("title and body are required.");
+ }
+ return Ok({
+  title: trimmedTitle,
+  body: trimmedBody,
+ });
 };
 
 const findEntryById= (entries, id) => {
