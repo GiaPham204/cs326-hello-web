@@ -22,10 +22,15 @@ form.addEventListener("submit", async (event) => {
   const saved = await response.json();
 
   const item = document.createElement("li");
-  item.dataset.id = list.children.length;
+  item.dataset.id = saved._id;
   item.dataset.title = saved.title;
   item.dataset.body = saved.body;
-  item.innerHTML = `<span class="entry-display"><strong>${saved.title}:</strong> ${saved.body}</span><button class="edit-btn" type="button">Edit</button><button class="delete-btn" type="button">Delete</button>`;
+  item.dataset.favorite = saved.favorite;
+  item.innerHTML = `<span class="entry-display"><strong>${saved.title}:</strong> ${saved.body}</span>
+  <button class="favorite-btn" type="button">${saved.favorite ? "★" : "☆"}
+  </button>
+
+  <button class="edit-btn" type="button">Edit</button><button class="delete-btn" type="button">Delete</button>`;
   list.append(item);
 
   form.reset();
@@ -33,7 +38,9 @@ form.addEventListener("submit", async (event) => {
 
 const startEdit = (item) => {
   const display = item.querySelector(".entry-display");
-  const buttons = item.querySelectorAll(".edit-btn, .delete-btn");
+  const buttons = item.querySelectorAll(
+    ".favorite-btn, .edit-btn, .delete-btn",
+  );
 
   const editForm = document.createElement("form");
   editForm.className = "edit-form";
@@ -90,6 +97,35 @@ const startEdit = (item) => {
 };
 
 list.addEventListener("click", async (event) => {
+  if (event.target.matches(".favorite-btn")) {
+    const button = event.target;
+    const item = button.closest("li");
+    const id = item.dataset.id;
+    button.disabled = true;
+    try {
+      const response = await fetch(`/entries/${id}/favorite`, {
+        method: "PATCH",
+      });
+      if (!response.ok) {
+        if (response.status === 404) {
+          item.remove();
+          return;
+        }
+        const { error } = await response.json();
+        alert(error);
+        button.disabled = false;
+        return;
+      }
+      const saved = await response.json();
+      item.dataset.favorite = saved.favorite;
+      button.textContent = saved.favorite ? "★" : "☆";
+      button.disabled = false;
+    } catch {
+      button.disabled = false;
+    }
+    return;
+  }
+
   if (event.target.matches(".edit-btn")) {
     startEdit(event.target.closest("li"));
     return;
@@ -111,10 +147,6 @@ list.addEventListener("click", async (event) => {
     }
 
     item.remove();
-    const remainingItems = list.querySelectorAll("li");
-    remainingItems.forEach((remainingItem, index) => {
-      remainingItem.dataset.id = index;
-    });
   } catch {
     button.disabled = false;
   }

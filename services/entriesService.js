@@ -1,64 +1,67 @@
-import {Ok, Err, Some, None} from "../result.js";
-import {getAll, save} from "../repositories/entriesRepository.js";
-import {toEntryDto} from "../dtos/entryDto.js";
+import { Ok, Err } from "../result.js";
+import {
+  getAll,
+  findById,
+  create,
+  updateById,
+  removeById,
+  toggleFavoriteById,
+} from "../repositories/entriesRepository.js";
+import { toEntryDto } from "../dtos/entryDto.js";
 
-const validateEntry= ({title, body}) => {
- const trimmedTitle= title.trim();
- const trimmedBody= body.trim();
- if(!trimmedTitle || !trimmedBody) {
-  return Err("title and body are required.");
- }
- return Ok({
-  title: trimmedTitle,
-  body: trimmedBody,
- });
+const validateEntry = ({ title, body }) => {
+  const trimmedTitle = title.trim();
+  const trimmedBody = body.trim();
+  if (!trimmedTitle || !trimmedBody) {
+    return Err("title and body are required.");
+  }
+  return Ok({
+    title: trimmedTitle,
+    body: trimmedBody,
+  });
 };
 
-const findEntryById= (entries, id) => {
-  const entry= entries[id];
-  return entry ? Some(entry): None;
-};
-
-export const listEntries= async() => {
-  const entries= await getAll();
+export const listEntries = async () => {
+  const entries = await getAll();
   return entries.map(toEntryDto);
 };
 
-export const createEntry= async(data) => {
-  const result= validateEntry(data);
-  if(!result.ok) {
+export const createEntry = async (data) => {
+  const result = validateEntry(data);
+  if (!result.ok) {
     return result;
   }
-  const entries= await getAll();
-  const newEntry= result.value;
-  entries.push(newEntry);
-  await save(entries);
+  const newEntry = await create(result.value);
   return Ok(toEntryDto(newEntry));
 };
 
-export const updateEntry= async(id, data) => {
-  const entries= await getAll();
-  const found= findEntryById(entries, id);
-  if(!found.some) {
+export const updateEntry = async (id, data) => {
+  const entry = await findById(id);
+  if (!entry) {
     return Err("Entry not found.");
   }
-  const result= validateEntry(data);
-  if(!result.ok) {
+  const result = validateEntry(data);
+  if (!result.ok) {
     return result;
   }
-  const updatedEntry= result.value;
-  entries[id] = updatedEntry;
-  await save(entries);
+  const updatedEntry = await updateById(id, result.value);
   return Ok(toEntryDto(updatedEntry));
 };
 
-export const deleteEntry= async(id) => {
-  const entries= await getAll();
-  const found= findEntryById(entries, id);
-  if(!found.some) {
+export const deleteEntry = async (id) => {
+  const entry = await findById(id);
+  if (!entry) {
     return Err("Entry not found.");
   }
-  entries.splice(id,1);
-  await save(entries);
+  await removeById(id);
   return Ok();
+};
+
+export const toggleFavorite = async (id) => {
+  const entry = await findById(id);
+  if (!entry) {
+    return Err("Entry not found.");
+  }
+  const updatedEntry = await toggleFavoriteById(id);
+  return Ok(toEntryDto(updatedEntry));
 };

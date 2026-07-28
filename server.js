@@ -3,9 +3,14 @@ import pagesRouter from "./routes/pages.js";
 import apiRouter from "./routes/api.js";
 import entriesRouter from "./routes/entries.js";
 import morgan from "morgan";
+import mongoose from "mongoose";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+await mongoose.connect(
+  process.env.MONGODB_URI || "mongodb://dev:devpassword@mongo:27017/devdb?authSource=admin",
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -31,6 +36,3 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
-// step one
-// step two
-// step three

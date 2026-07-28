@@ -32,16 +32,21 @@
   </form>
 
   <ul id="entries">
-    <% entries.forEach((entry,index) => { %>
+    <% entries.forEach((entry) => { %>
 <li
-data-id="<%= index %>"
+data-id="<%= entry._id %>"
 data-title="<%= entry.title %>"
 data-body="<%= entry.body %>"
+data-favorite="<%= entry.favorite %>"
 >
 <span class="entry-display">
   <strong><%= entry.title %>:</strong>
   <%= entry.body %>
 </span>
+
+<button class="favorite-btn" type="button">
+  <%= entry.favorite ? "★" : "☆" %>
+</button>
 
 <button class="edit-btn" type="button">Edit</button>
 <button class="delete-btn" type="button">Delete</button>
