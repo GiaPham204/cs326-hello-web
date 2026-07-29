@@ -13,8 +13,9 @@
 <body>
   <h1><%= title %></h1>
 
-  <form id="entry-form">
+  <form id="entry-form" class="flex flex-col gap-2 mb-6 sm:flex-row">
     <input
+    class="form-input"
     type="text"
     name="title"
     placeholder="Title"
@@ -22,12 +23,15 @@
   />
 
   <textarea
+  class="form-input"
   name="body"
   placeholder="Body"
   required
   ></textarea>
 
-  <button type="submit">
+  <button
+  class="bg-teal-700 text-white rounded px-4 py-2 hover:bg-teal-800"
+  type="submit">
     Add Entry
   </button>
   </form>

@@ -60,12 +60,35 @@ const startEdit = (item) => {
   );
 
   const editForm = document.createElement("form");
-  editForm.className = "edit-form";
+  editForm.className = "flex flex-1 flex-col gap-2 sm:flex-row";
   editForm.innerHTML = `
-    <input type="text" name="title" value="${item.dataset.title}">
-    <input type="text" name="body" value="${item.dataset.body}">
-    <button type="submit">Save</button>
-    <button type="button" class="cancel-btn">Cancel</button>
+    <input
+    class="form-input"
+    type="text"
+    name="title"
+    value="${item.dataset.title}"
+    required
+    >
+
+    <input
+    class="form-input"
+    type="text"
+    name="body"
+    value="${item.dataset.body}"
+    required
+    >
+    <button
+    class="bg-teal-700 text-white rounded px-3 py-2 hover:bg-teal-800"
+    type="submit"
+    >
+    Save
+    </button>
+    <button
+    class="cancel-btn bg-gray-500 text-white rounded px-3 py-2 hover:bg-gray-600"
+    type="button"
+    >
+    Cancel
+    </button>
   `;
 
   display.replaceWith(editForm);
