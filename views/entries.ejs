@@ -6,6 +6,7 @@
 
   <title><%= title %></title>
   <link rel="stylesheet" href="/style.css"/>
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
   <script src="/app.js" defer></script>
 </head>
 
@@ -49,7 +50,22 @@ data-favorite="<%= entry.favorite %>"
 </button>
 
 <button class="edit-btn" type="button">Edit</button>
-<button class="delete-btn" type="button">Delete</button>
+<button
+class="delete-btn"
+type="button"
+hx-delete="/entries/<%= entry._id %>"
+hx-target="closest li"
+hx-swap="outerHTML"
+hx-confirm="Delete this entry?"
+hx-indicator="#delete-indicator-<%= entry._id %>"
+>Delete</button>
+
+<span
+  id="delete-indicator-<%= entry._id %>"
+  class="delete-indicator htmx-indicator"
+  >
+Deleting...
+</span>
 </li>
 <% }) %>
 </ul>

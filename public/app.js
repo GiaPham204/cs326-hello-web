@@ -30,9 +30,26 @@ form.addEventListener("submit", async (event) => {
   <button class="favorite-btn" type="button">${saved.favorite ? "★" : "☆"}
   </button>
 
-  <button class="edit-btn" type="button">Edit</button><button class="delete-btn" type="button">Delete</button>`;
-  list.append(item);
+  <button class="edit-btn" type="button">Edit</button>
+  <button
+  class="delete-btn"
+  type="button"
+  hx-delete="/entries/${saved._id}"
+  hx-target="closest li"
+  hx-swap="outerHTML"
+  hx-confirm="Delete this entry?"
+  hx-indicator="#delete-indicator-${saved._id}"
+  >Delete</button>
 
+  <span
+    id="delete-indicator-${saved._id}"
+    class="delete-indicator htmx-indicator"
+  >
+    Deleting...
+  </span>
+  `;
+  list.append(item);
+  htmx.process(item);
   form.reset();
 });
 
@@ -128,26 +145,5 @@ list.addEventListener("click", async (event) => {
 
   if (event.target.matches(".edit-btn")) {
     startEdit(event.target.closest("li"));
-    return;
-  }
-
-  if (!event.target.matches(".delete-btn")) {
-    return;
-  }
-  const button = event.target;
-  const item = button.closest("li");
-  const id = item.dataset.id;
-
-  button.disabled = true;
-  try {
-    const response = await fetch(`/entries/${id}`, { method: "DELETE" });
-    if (!response.ok) {
-      button.disabled = false;
-      return;
-    }
-
-    item.remove();
-  } catch {
-    button.disabled = false;
   }
 });

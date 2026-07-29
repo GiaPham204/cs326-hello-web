@@ -64,7 +64,7 @@ export const removeEntry = async (req, res) => {
     });
     return;
   }
-  res.status(204).send();
+  res.status(200).send("");
 };
 
 export const toggleFavoriteController = async (req, res) => {

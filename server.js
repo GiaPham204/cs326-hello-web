@@ -9,7 +9,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 await mongoose.connect(
-  process.env.MONGODB_URI || "mongodb://dev:devpassword@mongo:27017/devdb?authSource=admin",
+  process.env.MONGODB_URI ||
+    "mongodb://dev:devpassword@mongo:27017/devdb?authSource=admin",
 );
 
 app.use(express.json());
@@ -36,9 +37,3 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
-// checkpoint 1
-// checkpoint 2
-// checkpoint 3
-// BUG: off-by-one introduced here
-// checkpoint 4
-// checkpoint 5

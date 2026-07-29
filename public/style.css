@@ -146,3 +146,13 @@ li {
   color: white;
   cursor: pointer;
 }
+
+.htmx-indicator {
+  display: none;
+}
+
+.delete-indicator.htmx-request {
+  display: inline !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
