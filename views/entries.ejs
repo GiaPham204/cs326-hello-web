@@ -55,7 +55,7 @@ data-favorite="<%= entry.favorite %>"
 
 <button class="edit-btn" type="button">Edit</button>
 <button
-class="delete-btn"
+class="delete-btn hover:bg-red-100 hover:text-red-800"
 type="button"
 hx-delete="/entries/<%= entry._id %>"
 hx-target="closest li"

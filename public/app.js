@@ -32,7 +32,7 @@ form.addEventListener("submit", async (event) => {
 
   <button class="edit-btn" type="button">Edit</button>
   <button
-  class="delete-btn"
+  class="delete-btn hover:bg-red-100 hover:text-red-800"
   type="button"
   hx-delete="/entries/${saved._id}"
   hx-target="closest li"
@@ -95,6 +95,8 @@ const startEdit = (item) => {
   buttons.forEach((button) => {
     button.hidden = true;
   });
+
+  editForm.querySelector('input[name="title"]').focus();
 
   editForm.querySelector(".cancel-btn").addEventListener("click", () => {
     editForm.replaceWith(display);
